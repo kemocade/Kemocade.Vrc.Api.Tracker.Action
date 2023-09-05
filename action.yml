@@ -1,0 +1,56 @@
+name: 'VRChat API Tracker Action'
+description: 'GitHub Action for automatically tracking information from the VRChat API'
+branding:
+  icon: globe
+  color: blue
+inputs:
+  workspace:
+    description: 'The workspace directory.'
+    default: '/github/workspace'
+  output:
+    description: 'The directory to write output inside of (relative to workspace). Example, "path/to/output".'
+    required: true
+  username:
+    description: 'VRChat Username'
+    required: true
+  password:
+    description: 'VRChat Password'
+    required: true
+  key:
+    description: 'VRChat 2FA secret key'
+    required: true
+  worlds:
+    description: 'VRChat World ID(s) to track (if more than one, use a comma-delimited string)'
+  groups:
+    description: 'VRChat Group ID(s) to track (if more than one, use a comma-delimited string)'
+  bot:
+    description: 'Discord Bot Token'
+  discords:
+    description: 'Discord Guild ID(s) to track (if more than one, use a comma-delimited string)'
+  channels:
+    description: 'Discord Channel ID(s) to track (if more than one, use a comma-delimited string)'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+  - '-W'
+  - ${{ inputs.workspace }}
+  - '-O'
+  - ${{ inputs.output }}
+  - '-u'
+  - ${{ inputs.username }}
+  - '-p'
+  - ${{ inputs.password }}
+  - '-k'
+  - ${{ inputs.key }}
+  - '-w'
+  - ${{ inputs.worlds }}
+  - '-g'
+  - ${{ inputs.groups }}
+  - '-b'
+  - ${{ inputs.bot }}
+  - '-d'
+  - ${{ inputs.discords }}
+  - '-c'
+  - ${{ inputs.channels }}
