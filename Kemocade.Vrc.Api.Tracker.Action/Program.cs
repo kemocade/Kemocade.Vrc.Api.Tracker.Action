@@ -141,6 +141,8 @@ foreach (KeyValuePair<ulong, ulong> kvp in discordServerIdsToChannelIds )
                 return (VrcId: uid, DiscordUser: m.Author, Offset: m.Timestamp);
             }
         )
+        // Ensure author is still in the server
+        .Where(g => serverUsers.Any(u => u.Id == g.Key))
         // In the case of more than one user claiming the same VRC ID, use the oldest message
         .Select(g => g.OrderBy(m => m.Offset).First())
         // Get all roles for each user
