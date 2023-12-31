@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <UserSecretsId>5246b3b9-fe0a-4c94-8a45-a4ac0ae42d95</UserSecretsId>
@@ -10,9 +10,9 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Discord.Net.WebSocket" Version="3.12.0" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.13.0" />
     <PackageReference Include="Otp.NET" Version="1.3.0" />
-    <PackageReference Include="VRChat.API" Version="1.12.0" />
+    <PackageReference Include="VRChat.API" Version="1.16.0" />
   </ItemGroup>
 
   <ItemGroup>

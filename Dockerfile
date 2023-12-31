@@ -1,5 +1,5 @@
-# Set the base image as the .NET 7.0 SDK (this includes the runtime)
-FROM mcr.microsoft.com/dotnet/sdk:7.0 as build-env
+# Set the base image as the .NET 8.0 SDK (this includes the runtime)
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build-env
 
 # Copy everything and publish the release (publish implicitly restores and builds)
 WORKDIR /app
@@ -21,6 +21,6 @@ LABEL com.github.actions.icon="upload-cloud"
 LABEL com.github.actions.color="blue"
 
 # Relayer the .NET Runtime, anew with the build output
-FROM mcr.microsoft.com/dotnet/runtime:7.0
+FROM mcr.microsoft.com/dotnet/runtime:8.0
 COPY --from=build-env /app/out .
 ENTRYPOINT [ "dotnet", "/Kemocade.Vrc.Api.Tracker.Action.dll" ]

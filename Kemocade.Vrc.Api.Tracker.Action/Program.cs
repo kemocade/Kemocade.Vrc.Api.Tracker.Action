@@ -127,30 +127,24 @@ foreach (KeyValuePair<ulong, ulong> kvp in discordServerIdsToChannelIds )
 
     // Build a mapping of VRC IDs to Discord Roles that prevents duplicates in both directions
     Dictionary<string, SocketRole[]> vrcUserIdsToDiscordRoles = messages
-        // Validate VRC ID format
-        .Where(m => TryGetVrcId(m, out _))
         // Prioritize the newest messages
         .OrderByDescending(m => m.Timestamp)
-        // Consolidate messages by Author
-        .GroupBy
+        .Select(m => (VrcId: GetVrcId(m), DiscordUser: m.Author))
+        // Validate VRC ID format & ensure author is still in the server
+        .Where
         (
-            m => m.Author.Id,
             m =>
-            {
-                TryGetVrcId(m, out string uid);
-                return (VrcId: uid, DiscordUser: m.Author, Offset: m.Timestamp);
-            }
+            !string.IsNullOrEmpty(m.VrcId) &&
+            serverUsers.Any(u => m.DiscordUser.Id == u.Id)
         )
-        // Ensure author is still in the server
-        .Where(g => serverUsers.Any(u => u.Id == g.Key))
-        // In the case of more than one user claiming the same VRC ID, use the oldest message
-        .Select(g => g.OrderBy(m => m.Offset).First())
+        .DistinctBy(m => m.DiscordUser.Id)
+        .DistinctBy(m => m.VrcId)
         // Get all roles for each user
         .ToDictionary
         (
-            u => u.VrcId,
-            u => serverUsers
-                .First(su => su.Id == u.DiscordUser.Id)
+            m => m.VrcId,
+            m => serverUsers
+                .First(su => su.Id == m.DiscordUser.Id)
                 .RoleIds
                 .Select(r => socketGuild.GetRole(r))
                 .ToArray()
@@ -447,23 +441,21 @@ WriteAllText(dataJsonFile.FullName, dataJsonString);
 WriteLine("Done!");
 Environment.Exit(0);
 
-static bool TryGetVrcId(IMessage message, out string vrcId)
+static string GetVrcId(IMessage message)
 {
     // Ensure the content contains a VRC User ID Prefix
-    vrcId = string.Empty;
     string content = message.Content;
-    if (!content.Contains(USR_PREFIX)) { return false; }
+    if (!content.Contains(USR_PREFIX)) { return string.Empty; }
 
     // Ensure there are enough characters following the string to extract a full User ID
     int lastIndex = content.LastIndexOf(USR_PREFIX);
-    if (content.Length - lastIndex < USR_LENGTH) { return false; }
+    if (content.Length - lastIndex < USR_LENGTH) { return string.Empty; }
 
     // Ensure the userId contains a valid GUID
     string candidate = content.Substring(lastIndex, USR_LENGTH);
-    if (!Guid.TryParse(candidate.AsSpan(USR_PREFIX.Length), out _)) { return false; }
+    if (!Guid.TryParse(candidate.AsSpan(USR_PREFIX.Length), out _)) { return string.Empty; }
 
-    vrcId = candidate.ToLowerInvariant();
-    return true;
+    return candidate.ToLowerInvariant();
 }
 
 static async Task WaitSeconds(int seconds) =>
