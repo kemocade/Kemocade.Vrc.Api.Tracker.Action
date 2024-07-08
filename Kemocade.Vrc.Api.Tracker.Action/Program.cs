@@ -260,7 +260,7 @@ try
         WriteLine("Getting Group Members...");
         List<GroupMember> groupMembers = [];
 
-        // Get non-self group members and add to group members list
+        // Get group members and add to group members list
         while (groupMembers.Count < memberCount - 1)
         {
             groupMembers.AddRange
@@ -276,10 +276,6 @@ try
                 m => m.User.DisplayName,
                 m => m.RoleIds.ToArray()
             );
-
-        // Add Self
-        groupDisplayNamesToVrcRoleIds.Add(currentUser.DisplayName, [..self.RoleIds]);
-        WriteLine($"Got Group Users: {groupDisplayNamesToVrcRoleIds.Keys.Count}");
 
         // Get All Group Roles
         WriteLine("Getting Group Roles...");
