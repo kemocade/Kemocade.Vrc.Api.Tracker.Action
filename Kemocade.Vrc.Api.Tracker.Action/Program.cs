@@ -46,13 +46,13 @@ bool useDiscord = !string.IsNullOrEmpty(inputs.Bot) &&
 
 // Parse delimeted inputs
 string[] worldIds = useWorlds ?
-     inputs.Worlds.Split(',') : Array.Empty<string>();
+     inputs.Worlds.Split(',') : [];
 string[] groupIds = useGroups ?
-     inputs.Groups.Split(',') : Array.Empty<string>();
+     inputs.Groups.Split(',') : [];
 ulong[] servers = useDiscord ?
-     inputs.Discords.Split(',').Select(ulong.Parse).ToArray() : Array.Empty<ulong>();
+     inputs.Discords.Split(',').Select(ulong.Parse).ToArray() : [];
 ulong[] channels = useDiscord ?
-    inputs.Channels.Split(',').Select(ulong.Parse).ToArray() : Array.Empty<ulong>();
+    inputs.Channels.Split(',').Select(ulong.Parse).ToArray() : [];
 
 // Ensure parallel Discord input arrays are equal lengths
 if (servers.Length != channels.Length)
@@ -91,10 +91,10 @@ else
 }
 
 // Map Discord Servers to Server Names, VRC User Roles, and All Roles
-Dictionary<ulong, string> discordGuildIdsToDiscordServerNames = new();
-Dictionary<ulong, int> discordGuildIdsToDiscordMemberCounts = new();
-Dictionary<ulong, Dictionary<string, SocketRole[]>> discordGuildIdsToVrcUserIdsToDiscordRoles = new();
-Dictionary<ulong, SocketRole[]> discordGuildIdsToAllDiscordRoles = new();
+Dictionary<ulong, string> discordGuildIdsToDiscordServerNames = [];
+Dictionary<ulong, int> discordGuildIdsToDiscordMemberCounts = [];
+Dictionary<ulong, Dictionary<string, SocketRole[]>> discordGuildIdsToVrcUserIdsToDiscordRoles = [];
+Dictionary<ulong, SocketRole[]> discordGuildIdsToAllDiscordRoles = [];
 foreach (KeyValuePair<ulong, ulong> kvp in discordServerIdsToChannelIds )
 {
     ulong discordGuildId = kvp.Key;
@@ -168,13 +168,13 @@ foreach (KeyValuePair<ulong, ulong> kvp in discordServerIdsToChannelIds )
 
 // Store data as it is collected from the API
 // World Data
-Dictionary<string, World> vrcWorldIdsToWorldModels = new();
+Dictionary<string, World> vrcWorldIdsToWorldModels = [];
 // Group Data
-Dictionary<string, Group> vrcGroupIdsToGroupModels = new();
-Dictionary<string, GroupRole[]> vrcGroupIdsToAllVrcRoles = new();
-Dictionary<string, Dictionary<string, string[]>> vrcGroupIdsToVrcDisplayNamesToVrcRoleIds = new();
+Dictionary<string, Group> vrcGroupIdsToGroupModels = [];
+Dictionary<string, GroupRole[]> vrcGroupIdsToAllVrcRoles = [];
+Dictionary<string, Dictionary<string, string[]>> vrcGroupIdsToVrcDisplayNamesToVrcRoleIds = [];
 // Discord Data
-Dictionary<ulong, Dictionary<string, SocketRole[]>> discordGuildIdsToVrcDisplayNamesToDiscordRoles = new();
+Dictionary<ulong, Dictionary<string, SocketRole[]>> discordGuildIdsToVrcDisplayNamesToDiscordRoles = [];
 // Handle API exceptions
 try
 {
@@ -258,13 +258,13 @@ try
 
         // Get group members
         WriteLine("Getting Group Members...");
-        List<GroupMember> groupMembers = new();
+        List<GroupMember> groupMembers = [];
 
         // Get non-self group members and add to group members list
         while (groupMembers.Count < memberCount - 1)
         {
             groupMembers.AddRange
-                (groupsApi.GetGroupMembers(groupId, 100, groupMembers.Count, 0));
+                (groupsApi.GetGroupMembers(groupId, n: 100, offset: groupMembers.Count, sort: GroupSearchSort.Asc));
             WriteLine(groupMembers.Count);
             await WaitSeconds(1);
         }
@@ -278,8 +278,7 @@ try
             );
 
         // Add Self
-        groupDisplayNamesToVrcRoleIds
-            .Add(currentUser.DisplayName, self.RoleIds.ToArray());
+        groupDisplayNamesToVrcRoleIds.Add(currentUser.DisplayName, [..self.RoleIds]);
         WriteLine($"Got Group Users: {groupDisplayNamesToVrcRoleIds.Keys.Count}");
 
         // Get All Group Roles
@@ -291,7 +290,7 @@ try
         vrcGroupIdsToGroupModels.Add(groupId, group);
         vrcGroupIdsToVrcDisplayNamesToVrcRoleIds
             .Add(groupId, groupDisplayNamesToVrcRoleIds);
-        vrcGroupIdsToAllVrcRoles.Add(group.Id, groupRoles.ToArray());
+        vrcGroupIdsToAllVrcRoles.Add(group.Id, [..groupRoles]);
     }
 
     // Pull Discord Users from the VRC API
