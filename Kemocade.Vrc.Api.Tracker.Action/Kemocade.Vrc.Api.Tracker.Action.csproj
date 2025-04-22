@@ -12,6 +12,7 @@
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Discord.Net.WebSocket" Version="3.17.2" />
     <PackageReference Include="Otp.NET" Version="1.4.0" />
+    <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="VRChat.API" Version="1.19.2" />
   </ItemGroup>
 

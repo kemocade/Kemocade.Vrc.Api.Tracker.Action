@@ -18,8 +18,6 @@ using static System.Text.Json.JsonSerializer;
 // Constants
 const string USR_PREFIX = "usr_";
 const int USR_LENGTH = 40;
-const string VRC_GROUP_OWNER = "*";
-const string VRC_GROUP_MODERATOR = "group-instance-moderate";
 const int DISCORD_MAX_ATTEMPTS = 5;
 const int DISCORD_MAX_MESSAGES = 100000;
 
@@ -378,9 +376,9 @@ TrackedData data = new()
                         r => new TrackedVrcGroupRole
                         {
                             Name = r.Name,
-                            IsAdmin = r.Permissions.Contains(VRC_GROUP_OWNER),
-                            IsModerator = r.Permissions.Contains(VRC_GROUP_OWNER) ||
-                                r.Permissions.Contains(VRC_GROUP_MODERATOR),
+                            IsAdmin = r.Permissions.Contains(GroupPermissions.group_all),
+                            IsModerator = r.Permissions.Contains(GroupPermissions.group_all) ||
+                                r.Permissions.Contains(GroupPermissions.group_instance_moderate),
                             VrcUsers = kvp.Value
                                 .Where(kvp2 => kvp2.Value.Contains(r.Id))
                                 .Select(kvp2 => GetVrcUserIndex(kvp2.Key))
